@@ -1,9 +1,7 @@
 package org.example;
 
-import org.example.model.Actor;
-import org.example.model.Movie;
-import org.example.model.Principal;
-import org.example.model.School;
+import org.example.model.*;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -18,7 +16,7 @@ import java.util.List;
 public class App {
     public static void main(String[] args) {
         Configuration configuration = new Configuration()
-                .addAnnotatedClass(Actor.class).addAnnotatedClass(Movie.class);
+                .addAnnotatedClass(Person.class).addAnnotatedClass(Item.class);
 
         SessionFactory sessionFactory = configuration.buildSessionFactory();
 
@@ -26,16 +24,27 @@ public class App {
             Session session = sessionFactory.getCurrentSession();
             session.beginTransaction();
 
-            Actor actor = session.get(Actor.class, 2);
-            System.out.println(actor.getMovies());
+            Person person = session.get(Person.class, 2);
+            System.out.println("Получили человека из таблицы");
 
-            Movie movieToRemove = actor.getMovies().get(0);
+            session.getTransaction().commit();
+            // session.close(); - сессия автоматически закрывается после коммита
+            System.out.println("Сессия закончилась");
 
-            actor.getMovies().remove(0);
-            movieToRemove.getActors().remove(actor);
+            // Открываем сессию и транзакцию еще раз (в любом другом месте в коде)
+            session = sessionFactory.getCurrentSession();
+            session.beginTransaction();
+
+            System.out.println("Внутри второй транзакции");
+
+            List<Item> items = session.createQuery("select i from Item i where i.owner.id=:personId", Item.class)
+                    .setParameter("personId", person.getId()).getResultList();
+
+            System.out.println(items);
 
             session.getTransaction().commit();
 
+            System.out.println("Вне второй сессии");
         }
     }
 }

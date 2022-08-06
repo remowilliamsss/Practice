@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.alishev.springcourse.models.Person;
 import ru.alishev.springcourse.services.ItemsService;
 import ru.alishev.springcourse.services.PeopleService;
+import ru.alishev.springcourse.util.PersonValidator;
 
 import javax.validation.Valid;
 
@@ -20,11 +21,13 @@ public class PeopleController {
 
     private final PeopleService peopleService;
     private final ItemsService itemsService;
+    private final PersonValidator personValidator;
 
     @Autowired
-    public PeopleController(PeopleService peopleService, ItemsService itemsService) {
+    public PeopleController(PeopleService peopleService, ItemsService itemsService, PersonValidator personValidator) {
         this.peopleService = peopleService;
         this.itemsService = itemsService;
+        this.personValidator = personValidator;
     }
 
     @GetMapping()
@@ -53,6 +56,8 @@ public class PeopleController {
     @PostMapping()
     public String create(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult) {
+        personValidator.validate(person, bindingResult);
+
         if (bindingResult.hasErrors())
             return "people/new";
 
@@ -69,6 +74,8 @@ public class PeopleController {
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult,
                          @PathVariable("id") int id) {
+        personValidator.validate(person, bindingResult);
+
         if (bindingResult.hasErrors())
             return "people/edit";
 

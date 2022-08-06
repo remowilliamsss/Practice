@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.alishev.springcourse.models.Person;
 import ru.alishev.springcourse.repositories.PeopleRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +31,18 @@ public class PeopleService {
         return foundPerson.orElse(null);
     }
 
+    public Person findByEmail(String email) {
+        List<Person> foundPeople = peopleRepository.findByEmail(email);
+        if (foundPeople.isEmpty())
+            return null;
+        else
+            return foundPeople.get(0);
+    }
+
     @Transactional
     public void save(Person person) {
+        person.setCreatedAt(new Date());
+
         peopleRepository.save(person);
     }
 

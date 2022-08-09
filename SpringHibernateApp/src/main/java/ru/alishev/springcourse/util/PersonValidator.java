@@ -32,10 +32,5 @@ public class PersonValidator implements Validator {
         if (peopleService.findByEmail(person.getEmail()) != null) {
             errors.rejectValue("email", "", "This email is already taken");
         }
-
-        if(person.getDateOfBirth() == null) {
-            errors.rejectValue("dateOfBirth", "", "Date of birth should be in this format:" +
-                    "dd/mm/yyyy.\nExample: 06/05/2000");
-        }
     }
 }

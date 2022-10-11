@@ -2,6 +2,7 @@ package ru.egorov.springcourse.FirstRestApp.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.egorov.springcourse.FirstRestApp.models.Person;
 import ru.egorov.springcourse.FirstRestApp.repositories.PeopleRepository;
 import ru.egorov.springcourse.FirstRestApp.util.PersonNotFoundException;
@@ -26,5 +27,10 @@ public class PeopleService {
     public Person findOne(int id) {
         Optional<Person> foundPerson = peopleRepository.findById(id);
         return foundPerson.orElseThrow(PersonNotFoundException::new);
+    }
+
+    @Transactional
+    public void save(Person person) {
+        peopleRepository.save(person);
     }
 }
